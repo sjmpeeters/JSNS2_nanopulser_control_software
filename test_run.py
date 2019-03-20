@@ -29,10 +29,10 @@ if __name__ == '__main__':
 	    sc.set_pulse_delay(args.pulse_delay)
 	    print "Set Pulse Delay"
 	    time.sleep(1)
-	    sc.set_trigger_delay(80)
+	    sc.set_trigger_delay(800)
 	    print "Set trigger delay"
 	    time.sleep(1)
-	    sc.set_fibre_delay(0)
+	    sc.set_fibre_delay(10)
 	    print "Set fibre delay"
 	    time.sleep(1)
 	    npulses = 0
