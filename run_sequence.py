@@ -16,8 +16,8 @@ if __name__ == '__main__':
     sc.set_pulse_height(args.pulse_height)
     sc.set_pulse_number(1000)
     sc.set_pulse_delay(args.pulse_delay)
-    sc.set_trigger_delay(80)
-    sc.set_fibre_delay(0)
+    sc.set_course_trigger_delay(80)
+    sc.set_fine_trigger_delay(0)
     npulses = 0
     sc.fire()
     npulses += 1000.

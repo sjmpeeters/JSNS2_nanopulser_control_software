@@ -28,8 +28,8 @@ _max_pulse_height = 16383
 _max_lo = 255.
 _max_pulse_delay = 256.020
 _min_pulse_delay = 0.1
-_max_trigger_delay = 1275
-_max_fibre_delay = 127.5
+_max_course_trigger_delay = 1275
+_max_fine_trigger_delay = 127.5
 _max_pulse_number = 65025
 _max_pulse_number_upper = 255
 _max_pulse_number_lower = 255
@@ -305,13 +305,13 @@ class SerialCommand(object):
         if self._current_ph is None:
             not_set += ["Pulse height"]
         if self._current_fd is None:
-            not_set += ["Fibre delay"]
+            not_set += ["Fine trigger delay"]
         if self._current_pn is None:
             not_set += ["Pulse number"]
         if self._current_pd is None:
             not_set += ["Pulse delay"]
         if self._current_td is None:
-            not_set += ["Trigger delay"]
+            not_set += ["Course trigger delay"]
         if not_set != []:
             raise pulser_exception.PulserException(
                 "Undefined options: %s" % (", ".join(opt for opt in not_set)))
@@ -338,7 +338,7 @@ class SerialCommand(object):
             self._current_ph = par
 
     def set_fibre_delay(self, par):
-        """Set the fibre (channel) delay for the selected channel"""
+        """Set the fine trigger delay for the selected channel"""
         #if len(self._channel) != 1:
         #    raise pulser_exception.PulserException(
         #        "Cannot set parameter with channels set as %s" %
@@ -347,8 +347,8 @@ class SerialCommand(object):
         #   not self._force_setting:
         #    pass
         #else:
-        self.logger.debug("Set Fibre delay %s %s" % (par, type(par)))
-        command, buffer_check = command_fibre_delay(par)
+        self.logger.debug("Set fine trigger delay %s %s" % (par, type(par)))
+        command, buffer_check = command_fine_trigger_delay(par)
         #self._send_channel_setting_command(command=command,
         #                                   buffer_check=buffer_check)
         self._send_command(command=command,
@@ -385,13 +385,13 @@ class SerialCommand(object):
                                        buffer_check=buffer_check)
             self._current_pd = par
 
-    def set_trigger_delay(self, par):
-        """Set the trigger delay (global setting)"""
+    def set_course_trigger_delay(self, par):
+        """Set the course trigger delay"""
         if par == self._current_td and not self._force_setting:
             pass
         else:
-            self.logger.debug("Set trigger delay %s %s" % (par, type(par)))
-            command, buffer_check = command_trigger_delay(par)
+            self.logger.debug("Set course trigger delay %s %s" % (par, type(par)))
+            command, buffer_check = command_course_trigger_delay(par)
             self._send_setting_command(command=command,
                                        buffer_check=buffer_check)
             self._current_td = par
@@ -443,25 +443,30 @@ def command_pulse_delay(par):
     return command, buffer_check
 
 
-def command_trigger_delay(par):
+def command_course_trigger_delay(par):
     """Get the command to set a trigger delay"""
-    if par > _max_trigger_delay or par < 0:
-        raise pulser_exception.PulserException("Invalid trigger delay: %s" %
+    if par > _max_course_trigger_delay or par < 0:
+        raise pulser_exception.PulserException("Invalid course trigger delay: %s" %
                                                par)
-    command = [_cmd_td+chr(par/5)]
+    adjusted, adj_delay, setting = parameters.course_trigger_delay(par)
+    #print "COMMAND", par, adjusted, adj_delay, setting
+    if adjusted is True:
+        raise pulser_exception.PulserException("Invalid course trigger delay: %s" %
+                                               (par))
+    command = [_cmd_td+chr(setting)]
     buffer_check = _cmd_td
     return command, buffer_check
 
 
-def command_fibre_delay(par):
+def command_fine_trigger_delay(par):
     """Get the command to set a fibre delay"""
-    if par > _max_fibre_delay or par < 0:
-        raise pulser_exception.PulserException("Invalid fibre delay: %s" %
+    if par > _max_fine_trigger_delay or par < 0:
+        raise pulser_exception.PulserException("Invalid fine trigger delay: %s" %
                                                par)
-    adjusted, adj_delay, setting = parameters.fibre_delay(par)
-    print "COMMAND", par, adjusted, adj_delay, setting
+    adjusted, adj_delay, setting = parameters.fine_trigger_delay(par)
+    #print "COMMAND", par, adjusted, adj_delay, setting
     if adjusted is True:
-        raise pulser_exception.PulserException("Invalid delay: %s" %
+        raise pulser_exception.PulserException("Invalid fine trigger delay: %s" %
                                                (par))
     command = [_cmd_fd+chr(setting)]
     buffer_check = _cmd_fd

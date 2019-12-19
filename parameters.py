@@ -5,8 +5,8 @@
 import math
 
 max_pulse_number = 65025
-max_fibre_delay = 63.75  # ns
-max_trigger_delay = 1275  # ns
+max_fine_trigger_delay   = 63.75  # ns
+max_course_trigger_delay = 1275  # ns
 
 
 def pulse_number(number):
@@ -37,12 +37,12 @@ def pulse_number(number):
     return adjusted, actual_par, hi, lo
 
 
-def trigger_delay(delay):
+def course_trigger_delay(delay):
     adjusted = False
     delay = float(delay)
-    if delay > max_trigger_delay or delay < 0:
-        raise Exception("Trigger Delay must be >%s and <%s" %
-                        (0, max_trigger_delay))
+    if delay > max_course_trigger_delay or delay < 0:
+        raise Exception("Course trigger Delay must be >%s and <%s" %
+                        (0, max_course_trigger_delay))
     parameter = int(round(delay)/5)
     adj_delay = parameter * 5
     if delay != adj_delay:
@@ -50,12 +50,12 @@ def trigger_delay(delay):
     return adjusted, adj_delay, parameter
 
 
-def fibre_delay(delay):
+def fine_trigger_delay(delay):
     adjusted = False
     delay = float(delay)
-    if delay > max_fibre_delay or delay < 0:
-        raise Exception("Fibre Delay must be >%s and <%s" %
-                        (0, max_fibre_delay))
+    if delay > max_fine_trigger_delay or delay < 0:
+        raise Exception("Fine trigger delay must be >%s and <%s" %
+                        (0, max_fine_trigger_delay))
     parameter = int(round(delay * 4.))
     adj_delay = float(parameter) / 4.
     if delay != adj_delay:
